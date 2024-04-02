@@ -1,7 +1,9 @@
 import { useState } from "react";
 import useLogin from "../Hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const { loading, login } = useLogin();
   const [formData, setFormData] = useState({
     email: "",
@@ -20,11 +22,12 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login(formData);
+    navigate("/home");
     setFormData({
-        email: "",
-        username: "",
-        password: "",
-      });
+      email: "",
+      username: "",
+      password: "",
+    });
   };
 
   return (
