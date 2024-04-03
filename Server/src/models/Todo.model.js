@@ -19,6 +19,9 @@ const todoSchema = new Schema(
       ref: "User",
       required: true,
     },
+    media: {
+      type: String, // cloudnary URL
+    },
   },
   { timestamps: true }
 );

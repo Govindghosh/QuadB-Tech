@@ -18,5 +18,9 @@ import userRouter from "./routes/user.routes.js";
 
 // routes declaration
 app.use("/api/v1/users", userRouter);
+// routes import
+import todoRouter from "./routes/todo.routes.js";
+// routes declaration
+app.use("/api/v1/todos", todoRouter);
 
 export default app;
