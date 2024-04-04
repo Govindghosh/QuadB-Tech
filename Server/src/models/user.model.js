@@ -29,10 +29,12 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is Required"],
     },
-    todo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Todo",
-    },
+    todo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Todo",
+      },
+    ],
     refreshToken: {
       type: String,
     },

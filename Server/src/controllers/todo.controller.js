@@ -25,7 +25,7 @@ const addTask = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select(
     "-password -refreshToken"
   );
-
+  console.log("user object ---", req.user);
   const newTask = await Todo.create({
     user: user,
     title,
@@ -40,5 +40,45 @@ const addTask = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, newTask, "Task add successfully"));
 });
+const viewTasks = asyncHandler(async (req, res) => {
+  const tasks = await Todo.find();
 
-export { addTask };
+  return res
+    .status(200)
+    .json(new ApiResponse(200, tasks, "Tasks retrieved successfully"));
+});
+const deleteTask = asyncHandler(async (req, res) => {
+  const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
+
+  // Find and delete the task by its ID
+  const deletedTask = await Todo.findByIdAndDelete(taskId);
+
+  if (!deletedTask) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Task deleted successfully"));
+});
+const editTask = asyncHandler(async (req, res) => {
+  const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
+  const { title, description, completed } = req.body;
+
+  // Find and update the task by its ID
+  const updatedTask = await Todo.findByIdAndUpdate(
+    taskId,
+    { title, description, completed },
+    { new: true }
+  );
+
+  if (!updatedTask) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedTask, "Task updated successfully"));
+});
+
+export { addTask, viewTasks, deleteTask, editTask };

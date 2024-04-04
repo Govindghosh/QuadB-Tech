@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -40,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existsUser) {
     throw new ApiError(409, "User with email or username already exists");
   }
-  
+
   const newUser = await User.create({
     fullName,
     email: email.toLowerCase(),
@@ -176,10 +177,31 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, req.user, "Current User Fetched Successfully"));
 });
+const getUserTodo = asyncHandler(async (req, res) => {
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user?._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "todos",
+        localField: "_id",
+        foreignField: "user",
+        as: "todo",
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user[0]?.todo, "Todo fetched successfully"));
+});
 export {
   registerUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
   getCurrentUser,
+  getUserTodo,
 };
