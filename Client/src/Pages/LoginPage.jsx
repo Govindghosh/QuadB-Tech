@@ -49,8 +49,6 @@ const LoginForm = () => {
         justifyContent={"center"}
         alignItems={"center"}
         px={4}
-        border="2px"
-        borderColor="red.800"
       >
         <Container maxW={"container.md"} padding={0}>
           <Flex justifyContent={"center"} alignItems={"center"} gap={10}>

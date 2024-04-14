@@ -1,8 +1,23 @@
 import { Text } from "@chakra-ui/react";
+import useGetUserTask from "../Hooks/useGetUserTask";
+
 function HomePage() {
+  const { isLoading, todos } = useGetUserTask();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  console.log(todos);
   return (
     <>
-      <Text as="b">Bold</Text>
+      <div>
+        {todos.map((todo) => (
+          <div key={todo._id}>
+            <Text as="b">{todo?.title}</Text>
+            <br />
+          </div>
+        ))}
+      </div>
+      {/* <Text as="b">Bold</Text>
       <br />
       <Text as="u">Underline</Text>
       <br />
@@ -16,7 +31,7 @@ function HomePage() {
       <br />
       <Text as="mark">Highlighted</Text>
       <br />
-      <Text as="s">Strikethrough</Text>
+      <Text as="s">Strikethrough</Text> */}
     </>
   );
 }
