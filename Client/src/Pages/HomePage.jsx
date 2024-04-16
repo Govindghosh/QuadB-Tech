@@ -1,4 +1,12 @@
-import { Text } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Grid,
+  Heading,
+  SimpleGrid,
+  Text,
+} from "@chakra-ui/react";
 import useGetUserTask from "../Hooks/useGetUserTask";
 
 function HomePage() {
@@ -9,15 +17,39 @@ function HomePage() {
   console.log(todos);
   return (
     <>
-      <div>
+      {/* <div>
         {todos.map((todo) => (
           <div key={todo._id}>
             <Text as="b">{todo?.title}</Text>
             <br />
           </div>
         ))}
-      </div>
-      {/* <Text as="b">Bold</Text>
+      </div> */}
+      <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+        {todos.map((todo) => (
+          <SimpleGrid
+            key={todo._id}
+            spacing={4}
+            templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
+            p={"2px"}
+            maxW={"full"}
+          >
+            <Card>
+              <CardHeader>
+                <Heading size="md"> {todo?.title}</Heading>
+              </CardHeader>
+              <CardBody>
+                {todo.completed ? (
+                  <Text as="s">{todo?.description}</Text>
+                ) : (
+                  <Text>{todo?.description}</Text>
+                )}
+              </CardBody>
+            </Card>
+          </SimpleGrid>
+        ))}
+      </Grid>
+      <Text as="b">Bold</Text>
       <br />
       <Text as="u">Underline</Text>
       <br />
@@ -31,7 +63,7 @@ function HomePage() {
       <br />
       <Text as="mark">Highlighted</Text>
       <br />
-      <Text as="s">Strikethrough</Text> */}
+      <Text as="s">Strikethrough</Text>
     </>
   );
 }
