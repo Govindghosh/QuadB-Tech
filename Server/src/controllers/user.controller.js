@@ -193,9 +193,10 @@ const getUserTodo = asyncHandler(async (req, res) => {
       },
     },
   ]);
+  console.log("user", user[0]);
   return res
     .status(200)
-    .json(new ApiResponse(200, user[0]?.todo, "Todo fetched successfully"));
+    .json(new ApiResponse(200, user[0].todo, "Todo fetched successfully"));
 });
 export {
   registerUser,
