@@ -28,7 +28,7 @@ import useAddTodo from "../Hooks/useAddTodo";
 import { useState } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { AiTwotoneDelete } from "react-icons/ai";
-
+import useDeleteTodo from "../Hooks/useDeleteTodo";
 function HomePage() {
   const [todoData, setTodoData] = useState({
     title: "",
@@ -57,8 +57,17 @@ function HomePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isLoading, todos } = useGetUserTask();
   const { currentUser } = useGetCurrentUser();
+  const { deleting, deleteTodo, showToast } = useDeleteTodo();
   console.log("current user", currentUser);
-
+  const handleDelete = async (todoID) => {
+    try {
+      await deleteTodo(todoID);
+      showToast("Success", "delete", "success");
+      console.log("65 client todos._id", todoID);
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -103,8 +112,13 @@ function HomePage() {
                       )}
                     </CardBody>
                     <CardFooter gap={2}>
-                    <BiSolidEdit />
-                    <AiTwotoneDelete />
+                      <BiSolidEdit />
+                      <Button
+                        onClick={() => handleDelete(todo._id)}
+                        isLoading={deleting}
+                      >
+                        <AiTwotoneDelete />
+                      </Button>
                     </CardFooter>
                   </Card>
                 </SimpleGrid>

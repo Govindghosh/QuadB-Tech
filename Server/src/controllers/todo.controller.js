@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Todo } from "../models/todo.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
@@ -47,20 +47,22 @@ const viewTasks = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, tasks, "Tasks retrieved successfully"));
 });
-const deleteTask = asyncHandler(async (req, res) => {
-  const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
+const deleteTodo = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId; // Correct way to access task ID from route parameters
+  console.log("taskId from server log 52 deleteTodo", taskId);
 
   // Find and delete the task by its ID
   const deletedTask = await Todo.findByIdAndDelete(taskId);
-
+  console.log("delete Task 55", deletedTask.media);
   if (!deletedTask) {
     throw new ApiError(404, "Task not found");
   }
-
+  await deleteOnCloudinary(deletedTask.media);
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Task deleted successfully"));
 });
+
 const editTask = asyncHandler(async (req, res) => {
   const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
   const { title, description, completed } = req.body;
@@ -81,4 +83,4 @@ const editTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedTask, "Task updated successfully"));
 });
 
-export { addTask, viewTasks, deleteTask, editTask };
+export { addTask, viewTasks, deleteTodo, editTask };
