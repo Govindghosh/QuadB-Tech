@@ -4,7 +4,7 @@ import { Todo } from "../models/todo.model.js";
 import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import { isValidObjectId } from "mongoose";
 const addTask = asyncHandler(async (req, res) => {
   const { media, completed, description, title } = req.body;
   if (!title) {
@@ -64,23 +64,65 @@ const deleteTodo = asyncHandler(async (req, res) => {
 });
 
 const editTask = asyncHandler(async (req, res) => {
-  const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
+  const taskId = req.params.taskId; // Assuming the task ID is passed as a route parameter
+  if (!isValidObjectId(taskId)) {
+    throw new ApiError(400, "video id is not matched in the Collection");
+  }
   const { title, description, completed } = req.body;
+  const mediaFiles = req.files.media; // Changed to plural, assuming it's an array
+  const mediaFileLocalPath =
+    mediaFiles && mediaFiles.length > 0 ? mediaFiles[0].path : undefined; // Check if mediaFiles exists and is an array before accessing its elements
+  if (
+    (!title || title.trim() === "") &&
+    (!description || !description.trim() === "") &&
+    !completed &&
+    !mediaFileLocalPath
+  ) {
+    throw new ApiError(400, "Atleast one field is required");
+  }
+  const media = await Todo.findById(Todo.media);
 
-  // Find and update the task by its ID
-  const updatedTask = await Todo.findByIdAndUpdate(
-    taskId,
-    { title, description, completed },
-    { new: true }
-  );
+  const todo = await Todo.findById(taskId);
 
-  if (!updatedTask) {
+  if (!todo) {
     throw new ApiError(404, "Task not found");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updatedTask, "Task updated successfully"));
+  if (req.user._id.toString() !== todo.user.toString()) {
+    throw new ApiError(403, "You are not the owner of this task");
+  }
+  const mediaFile = await uploadOnCloudinary(mediaFileLocalPath);
+  console.log("line 95 mediaFile", mediaFile.url);
+  if (!mediaFile.url) {
+    throw new ApiError(500, "Error while uploading files and getting the URL");
+  }
+
+  if (mediaFile.url !== "") {
+    await deleteOnCloudinary(todo.media);
+  }
+  // Find and update the task by its ID
+  try {
+    let updatedTodo;
+    if (title && description && completed && mediaFile.url) {
+      updatedTodo = await Todo.findByIdAndUpdate(
+        taskId,
+        {
+          $set: {
+            title: title,
+            description: description,
+            completed,
+            media: mediaFile.url,
+          },
+        },
+        { new: true }
+      );
+    }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedTodo, "Video updated successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message || "internal server error");
+  }
 });
 
 export { addTask, viewTasks, deleteTodo, editTask };

@@ -29,6 +29,7 @@ import { useState } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { AiTwotoneDelete } from "react-icons/ai";
 import useDeleteTodo from "../Hooks/useDeleteTodo";
+import useEditTodo from "../Hooks/useEditTodo";
 function HomePage() {
   const [todoData, setTodoData] = useState({
     title: "",
@@ -58,6 +59,7 @@ function HomePage() {
   const { isLoading, todos } = useGetUserTask();
   const { currentUser } = useGetCurrentUser();
   const { deleting, deleteTodo, showToast } = useDeleteTodo();
+  const { updating, updateTodo } = useEditTodo();
   console.log("current user", currentUser);
   const handleDelete = async (todoID) => {
     try {
@@ -112,7 +114,9 @@ function HomePage() {
                       )}
                     </CardBody>
                     <CardFooter gap={2}>
-                      <BiSolidEdit />
+                      <Button onClick={onOpen}>
+                        <BiSolidEdit />
+                      </Button>
                       <Button
                         onClick={() => handleDelete(todo._id)}
                         isLoading={deleting}
