@@ -66,7 +66,7 @@ const deleteTodo = asyncHandler(async (req, res) => {
 const editTask = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId; // Assuming the task ID is passed as a route parameter
   if (!isValidObjectId(taskId)) {
-    throw new ApiError(400, "video id is not matched in the Collection");
+    throw new ApiError(400, "task id is not matched in the Collection");
   }
   const { title, description, completed } = req.body;
   const mediaFiles = req.files.media; // Changed to plural, assuming it's an array
@@ -119,7 +119,7 @@ const editTask = asyncHandler(async (req, res) => {
     }
     return res
       .status(200)
-      .json(new ApiResponse(200, updatedTodo, "Video updated successfully"));
+      .json(new ApiResponse(200, updatedTodo, "updated successfully"));
   } catch (error) {
     throw new ApiError(500, error.message || "internal server error");
   }

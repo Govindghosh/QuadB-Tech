@@ -6,11 +6,12 @@ const useEditTodo = () => {
   const [updating, setUpdating] = useState(false);
   const showToast = useShowToast();
 
-  const updateTodo = async (taskId) => {
+  const updateTodo = async (taskId, formData) => {
     setUpdating(true);
     try {
       const response = await axios.patch(
-        `${import.meta.env.VITE_UPDATETODO_API}/${taskId}`
+        `${import.meta.env.VITE_UPDATETODO_API}/${taskId}`,
+        formData // Sending form data containing task updates and media files
       );
 
       setUpdating(false);
